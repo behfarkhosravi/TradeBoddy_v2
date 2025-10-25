@@ -109,6 +109,8 @@ class SampleStrategy(IStrategy):
         "stoploss_on_exchange": False,
     }
 
+    # Optional order time in force.
+    order_time_in_force = {"entry": "GTC", "exit": "GTC"}
 
     plot_config = {
         "main_plot": {
@@ -133,11 +135,11 @@ class SampleStrategy(IStrategy):
         of the whitelist as well.
         For more information, please consult the documentation
         :return: List of tuples in the format (pair, interval)
-            Sample: return [("PAXG/USDT", "5m"),
+            Sample: return [("ETH/USDT", "5m"),
                             ("BTC/USDT", "15m"),
                             ]
         """
-        return [("PAXG/USDT", "15m")]
+        return []
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
