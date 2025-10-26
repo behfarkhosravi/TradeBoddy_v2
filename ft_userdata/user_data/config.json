@@ -39,23 +39,20 @@
         "ccxt_config": {},
         "ccxt_async_config": {},
         "pair_whitelist": [
-            "PAXG/USDT"
+            "BTC/USDT:USDT",
+            "PAXG/USDT:USDT"
         ],
         "pair_blacklist": [
             "BNB/.*"
         ]
     },
     "pairlists": [
-        {
-            "method": "VolumePairList",
-            "number_assets": 20,
-            "sort_key": "quoteVolume",
-            "min_value": 0,
-            "refresh_period": 1800
-        }
-    ],
+            {
+                "method": "StaticPairList"
+            }
+        ],
     "telegram": {
-        "enabled": true,
+        "enabled": false,
         "token": "8325784425:AAHdDy0YmIQKp3Kc_dh8jk5BOgCP4Y-M5Ds",
         "chat_id": "386066123"
     },
@@ -64,7 +61,7 @@
         "listen_ip_address": "0.0.0.0",
         "listen_port": 8080,
         "verbosity": "error",
-        "enable_openapi": false,
+        "enable_openapi": true,
         "jwt_secret_key": "58aa74c3a0ea9ec327bf1f4fa44e6ba3ae25c72610d9fbaa28a6d353d12a5027",
         "ws_token": "Kw5cSp1qeCwjBL2SEcbtfYK-dpNxb0f76Q",
         "CORS_origins": [],

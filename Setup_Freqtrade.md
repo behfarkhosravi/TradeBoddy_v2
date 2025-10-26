@@ -13,3 +13,5 @@ docker compose run --rm freqtrade create-userdir --userdir user_data
 # Create configuration - Requires answering interactive questions
 docker compose run --rm freqtrade new-config --config user_data/config.json
 ```
+
+docker-compose run freqtrade download-data --exchange binance --pairs PAXG/USDT --timeframes 1h 15m --days 730
