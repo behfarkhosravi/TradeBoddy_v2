@@ -1,15 +1,38 @@
 const chartsContainer = document.getElementById('charts-container');
+const loadingSpinner = document.getElementById('loading-spinner');
+const errorContainer = document.getElementById('error-container');
 const apiBaseUrl = '/api/v1';
+
+function showLoading() {
+    loadingSpinner.style.display = 'block';
+    chartsContainer.style.display = 'none';
+    errorContainer.style.display = 'none';
+}
+
+function hideLoading() {
+    loadingSpinner.style.display = 'none';
+    chartsContainer.style.display = 'grid';
+}
+
+function showError(message) {
+    loadingSpinner.style.display = 'none';
+    chartsContainer.style.display = 'none';
+    errorContainer.textContent = message;
+    errorContainer.style.display = 'block';
+}
+
 
 async function fetchData(pair, timeframe) {
     try {
         const response = await fetch(`${apiBaseUrl}/pair_candles?pair=${encodeURIComponent(pair)}&timeframe=${timeframe}&limit=100`);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
         }
         return await response.json();
     } catch (error) {
         console.error('Error fetching data:', error);
+        throw error; // Re-throw the error to be caught by the caller
     }
 }
 
@@ -52,34 +75,41 @@ function createChart(chartData, condition, timeframe) {
 }
 
 async function updateCharts() {
-    const pairs = ['PAXG/USDT:USDT'];
-    const timeframes = ['15m', '1h'];
-    const conditions = ['rsi_condition', 'stoch_condition', 'cloud_condition', 'line_condition', 'macd_condition', 'adx_condition', 'bb_condition'];
+    showLoading();
+    try {
+        const pairs = ['PAXG/USDT:USDT'];
+        const timeframes = ['15m', '1h'];
+        const conditions = ['rsi_condition', 'stoch_condition', 'cloud_condition', 'line_condition', 'macd_condition', 'adx_condition', 'bb_condition'];
 
-    chartsContainer.innerHTML = '';
+        chartsContainer.innerHTML = '';
 
-    for (const pair of pairs) {
-        for (const timeframe of timeframes) {
-            const data = await fetchData(pair, timeframe);
-            if (data) {
-                const chartData = data.data.map(d => {
-                    const row = {};
-                    data.columns.forEach((col, i) => {
-                        row[col] = d[i];
+        for (const pair of pairs) {
+            for (const timeframe of timeframes) {
+                const data = await fetchData(pair, timeframe);
+                if (data) {
+                    const chartData = data.data.map(d => {
+                        const row = {};
+                        data.columns.forEach((col, i) => {
+                            row[col] = d[i];
+                        });
+                        return row;
                     });
-                    return row;
-                });
 
-                for (const condition of conditions) {
-                    const conditionTimeframe = `${condition}_${timeframe.replace('m', '')}`;
-                    if (chartData[0].hasOwnProperty(condition) || chartData[0].hasOwnProperty(conditionTimeframe)) {
-                         createChart(chartData, chartData[0].hasOwnProperty(conditionTimeframe) ? conditionTimeframe : condition, timeframe);
+                    for (const condition of conditions) {
+                        const conditionTimeframe = `${condition}_${timeframe.replace('m', '')}`;
+                        if (chartData.length > 0 && (chartData[0].hasOwnProperty(condition) || chartData[0].hasOwnProperty(conditionTimeframe))) {
+                            createChart(chartData, chartData[0].hasOwnProperty(conditionTimeframe) ? conditionTimeframe : condition, timeframe);
+                        }
                     }
                 }
             }
         }
+        hideLoading();
+    } catch (error) {
+        showError(`Failed to load chart data. Please check the Freqtrade API connection. Details: ${error.message}`);
     }
 }
 
+// Initial load and periodic refresh
 updateCharts();
 setInterval(updateCharts, 60000);

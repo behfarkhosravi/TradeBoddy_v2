@@ -26,3 +26,12 @@ services:
       --logfile /freqtrade/user_data/logs/backtest.log
       --config /freqtrade/user_data/config.json
       --strategy level_one
+
+  dashboard:
+    build: ./dashboard
+    ports:
+      - "8001:8000"
+    volumes:
+      - "./ft_userdata/user_data/config.json:/app/config.json:ro"
+    depends_on:
+      - freqtrade
