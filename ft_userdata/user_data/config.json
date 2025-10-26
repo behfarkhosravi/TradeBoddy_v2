@@ -64,7 +64,7 @@
         "enable_openapi": true,
         "jwt_secret_key": "58aa74c3a0ea9ec327bf1f4fa44e6ba3ae25c72610d9fbaa28a6d353d12a5027",
         "ws_token": "Kw5cSp1qeCwjBL2SEcbtfYK-dpNxb0f76Q",
-        "CORS_origins": [],
+        "CORS_origins": ["http://127.0.0.1:8000"],
         "username": "behfar",
         "password": "No ip dom loo lin co 0"
     },
