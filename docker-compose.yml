@@ -14,6 +14,8 @@ services:
       --db-url sqlite:////freqtrade/user_data/tradesv3.sqlite
       --config /freqtrade/user_data/config.json
       --strategy level_one
+    networks:
+      - ft_network
 
   freqtrade-backtest:
     image: freqtradeorg/freqtrade:stable
@@ -26,3 +28,51 @@ services:
       --logfile /freqtrade/user_data/logs/backtest.log
       --config /freqtrade/user_data/config.json
       --strategy level_one
+    networks:
+      - ft_network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    networks:
+      - ft_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - ft_network
+
+  task-manager:
+    build:
+      context: ./task-manager
+    container_name: task-manager
+    restart: unless-stopped
+    networks:
+      - ft_network
+    depends_on:
+      - freqtrade
+    environment:
+      - FREQTRADE_API_URL=http://freqtrade:8080
+      - PROMETHEUS_PORT=8001
+      - FREQTRADE_USERNAME=behfar
+      - FREQTRADE_PASSWORD=No ip dom loo lin co 0
+
+networks:
+  ft_network:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:
