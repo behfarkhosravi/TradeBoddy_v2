@@ -26,14 +26,21 @@ CONDITIONS = [
 # --- State ---
 last_candle_timestamp = {}
 jwt_token = None
+refresh_token = None
 token_expiration = 0
 
 def get_jwt_token():
     """Authenticate with Freqtrade API and get a JWT token."""
-    global jwt_token, token_expiration
+    global jwt_token, refresh_token, token_expiration
     # If token exists and is not expiring soon (e.g., in the next minute)
     if jwt_token and token_expiration > time.time() + 60:
         return jwt_token
+
+    if refresh_token:
+        token = refresh_jwt_token()
+        if token:
+            return token
+
     try:
         response = requests.post(
             f"{FREQTRADE_API_URL}/api/v1/token/login",
@@ -42,11 +49,30 @@ def get_jwt_token():
         response.raise_for_status()
         token_data = response.json()
         jwt_token = token_data.get('access_token')
+        refresh_token = token_data.get('refresh_token')
         # Freqtrade tokens usually expire in 15 minutes (900 seconds)
         token_expiration = time.time() + 840  # 14 minutes
         return jwt_token
     except requests.exceptions.RequestException as e:
         logging.error(f"Failed to get JWT token: {e}")
+        return None
+
+def refresh_jwt_token():
+    """Refresh the JWT token using the refresh token."""
+    global jwt_token, token_expiration
+    try:
+        headers = {'Authorization': f'Bearer {refresh_token}'}
+        response = requests.post(
+            f"{FREQTRADE_API_URL}/api/v1/token/refresh",
+            headers=headers
+        )
+        response.raise_for_status()
+        token_data = response.json()
+        jwt_token = token_data.get('access_token')
+        token_expiration = time.time() + 840  # 14 minutes
+        return jwt_token
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to refresh JWT token: {e}")
         return None
 
 def fetch_pair_history(token, pair, timeframe='5m', strategy='level_one'):
