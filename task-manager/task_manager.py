@@ -18,9 +18,20 @@ PROMETHEUS_PORT = int(os.getenv('PROMETHEUS_PORT', 8001))
 # Create a dictionary to hold gauges for each condition for each pair
 METRICS = {}
 CONDITIONS = [
-    'enter_long', 'enter_short', 'exit_long', 'exit_short',
-    'rsi', 'sma', 'ema', 'macd', 'macdsignal', 'macdhist',
-    'bollinger_top', 'bollinger_mid', 'bollinger_bottom', 'volume'
+    'rsi_condition_1h',
+    'stoch_condition_1h',
+    'cloud_condition_1h',
+    'line_condition_1h',
+    'macd_condition_1h',
+    'adx_condition_1h',
+    'bb_condition_1h',
+    'rsi_condition',
+    'stoch_condition',
+    'cloud_condition',
+    'line_condition',
+    'macd_condition',
+    'adx_condition',
+    'bb_condition'
 ]
 
 # --- State ---
@@ -75,14 +86,14 @@ def refresh_jwt_token():
         logging.error(f"Failed to refresh JWT token: {e}")
         return None
 
-def fetch_pair_history(token, pair, timeframe='5m', strategy='level_one'):
-    """Fetch analyzed pair history from Freqtrade."""
+def fetch_pair_candles(token, pair, timeframe='5m', limit=2):
+    """Fetch analyzed pair candles from Freqtrade."""
     try:
         headers = {'Authorization': f'Bearer {token}'}
         params = {
             'pair': pair,
             'timeframe': timeframe,
-            'strategy': strategy
+            'limit': limit
         }
         response = requests.get(
             f"{FREQTRADE_API_URL}/api/v1/pair_candles",
@@ -92,7 +103,7 @@ def fetch_pair_history(token, pair, timeframe='5m', strategy='level_one'):
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        logging.error(f"Failed to fetch pair history for {pair}: {e}")
+        logging.error(f"Failed to fetch pair candles for {pair}: {e}")
         return None
 
 def wait_for_freqtrade():
@@ -124,7 +135,7 @@ def update_metrics():
     pairs = [pair.strip() for pair in pairs_str.split(',')]
 
     for pair in pairs:
-        data = fetch_pair_history(token, pair)
+        data = fetch_pair_candles(token, pair)
         if not data or 'data' not in data or not data['data']:
             logging.warning(f"No data received for pair {pair}")
             continue
