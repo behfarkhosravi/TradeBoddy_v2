@@ -10,8 +10,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 # --- Configuration ---
 FREQTRADE_API_URL = os.getenv('FREQTRADE_API_URL', 'http://freqtrade:8080')
-FREQTRADE_USERNAME = os.getenv('FREQTRADE_USERNAME')
-FREQTRADE_PASSWORD = os.getenv('FREQTRADE_PASSWORD')
+FREQTRADE_USERNAME = os.getenv('FREQTRADE_USERNAME', 'behfar')
+FREQTRADE_PASSWORD = os.getenv('FREQTRADE_PASSWORD', 'No ip dom loo lin co 0')
 PROMETHEUS_PORT = int(os.getenv('PROMETHEUS_PORT', 8001))
 
 # --- Prometheus Metrics ---
@@ -86,7 +86,7 @@ def refresh_jwt_token():
         logging.error(f"Failed to refresh JWT token: {e}")
         return None
 
-def fetch_pair_candles(token, pair, timeframe='5m', limit=2):
+def fetch_pair_candles(token, pair, timeframe='15m', limit=2):
     """Fetch analyzed pair candles from Freqtrade."""
     try:
         headers = {'Authorization': f'Bearer {token}'}
