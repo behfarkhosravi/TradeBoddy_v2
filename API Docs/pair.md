@@ -1569,3 +1569,29 @@ Example response:
   "data_stop_ts": 1761472800000
 }
 ```
+
+Legend:
+```md
+### **1h Timeframe → suffixed `_1h`**
+| # | Condition | Column | **1** | **-1** | **0** |
+|---|-----------|--------|-------|--------|-------|
+| 1 | RSI > 21-EMA(RSI) | `rsi_condition_1h` | Bullish | Bearish | Neutral |
+| 2 | Stoch %K > %D (21) | `stoch_condition_1h` | Bullish | Bearish | Flat |
+| 3 | Price > Cloud Top | `cloud_condition_1h` | Above cloud | Below cloud | Inside |
+| 4 | Tenkan > Kijun | `line_condition_1h` | Bullish | Bearish | Equal |
+| 5 | MACD > Signal | `macd_condition_1h` | Bullish | Bearish | Flat |
+| 6 | ADX > 25 & +DI > -DI | `adx_condition_1h` | Strong uptrend | Strong downtrend | Weak/No trend |
+| 7 | Close > Upper BB | `bb_condition_1h` | Overbought | Oversold | Inside bands |
+
+### **15m Timeframe → no suffix**
+| # | Condition | Column | **1** | **-1** | **0** |
+|---|-----------|--------|-------|--------|-------|
+| 8 | RSI > 21-EMA(RSI) | `rsi_condition` | Bullish | Bearish | Neutral |
+| 9 | Stoch %K > %D (21) | `stoch_condition` | Bullish | Bearish | Flat |
+|10 | Price > Cloud Top | `cloud_condition` | Above cloud | Below cloud | Inside |
+|11 | Tenkan > Kijun | `line_condition` | Bullish | Bearish | Equal |
+|12 | MACD > Signal | `macd_condition` | Bullish | Bearish | Flat |
+|13 | ADX > 25 & +DI > -DI | `adx_condition` | Strong uptrend | Strong downtrend | Weak |
+|14 | Close > Upper BB | `bb_condition` | Overbought | Oversold | Inside |
+```
+
