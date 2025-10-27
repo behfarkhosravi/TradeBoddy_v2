@@ -63,11 +63,11 @@ services:
       - ft_network
     depends_on:
       - freqtrade
+    env_file:
+      - task-manager/.env
     environment:
       - FREQTRADE_API_URL=http://freqtrade:8080
       - PROMETHEUS_PORT=8001
-      - FREQTRADE_USERNAME=behfar
-      - FREQTRADE_PASSWORD=No ip dom loo lin co 0
 
 networks:
   ft_network:

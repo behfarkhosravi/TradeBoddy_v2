@@ -85,7 +85,7 @@ def fetch_pair_history(token, pair, timeframe='5m', strategy='level_one'):
             'strategy': strategy
         }
         response = requests.get(
-            f"{FREQTRADE_API_URL}/api/v1/pair_history",
+            f"{FREQTRADE_API_URL}/api/v1/pair_candles",
             headers=headers,
             params=params
         )
@@ -98,13 +98,18 @@ def fetch_pair_history(token, pair, timeframe='5m', strategy='level_one'):
 def wait_for_freqtrade():
     """Wait for the Freqtrade API to be available."""
     while True:
-        try:
-            response = requests.get(f"{FREQTRADE_API_URL}/api/v1/ping")
-            if response.status_code == 200:
-                logging.info("Freqtrade API is available.")
-                break
-        except requests.exceptions.RequestException as e:
-            logging.warning(f"Freqtrade API not yet available: {e}. Retrying in 10 seconds...")
+        token = get_jwt_token()
+        if token:
+            try:
+                headers = {'Authorization': f'Bearer {token}'}
+                response = requests.get(f"{FREQTRADE_API_URL}/api/v1/status", headers=headers)
+                if response.status_code == 200:
+                    logging.info("Freqtrade bot is ready.")
+                    break
+            except requests.exceptions.RequestException as e:
+                logging.warning(f"Freqtrade bot not yet ready: {e}. Retrying in 10 seconds...")
+        else:
+            logging.warning("Could not get JWT token. Retrying in 10 seconds...")
         time.sleep(10)
 
 
