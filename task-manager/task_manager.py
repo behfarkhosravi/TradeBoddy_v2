@@ -69,6 +69,19 @@ def fetch_pair_history(token, pair, timeframe='5m', strategy='level_one'):
         logging.error(f"Failed to fetch pair history for {pair}: {e}")
         return None
 
+def wait_for_freqtrade():
+    """Wait for the Freqtrade API to be available."""
+    while True:
+        try:
+            response = requests.get(f"{FREQTRADE_API_URL}/api/v1/ping")
+            if response.status_code == 200:
+                logging.info("Freqtrade API is available.")
+                break
+        except requests.exceptions.RequestException as e:
+            logging.warning(f"Freqtrade API not yet available: {e}. Retrying in 10 seconds...")
+        time.sleep(10)
+
+
 def update_metrics():
     """Fetch data and update Prometheus metrics."""
     token = get_jwt_token()
@@ -120,6 +133,9 @@ def update_metrics():
 if __name__ == '__main__':
     logging.info(f"Starting Prometheus server on port {PROMETHEUS_PORT}")
     start_http_server(PROMETHEUS_PORT)
+
+    wait_for_freqtrade()
+
     logging.info("Task manager started. Waiting for the first run.")
 
     while True:
