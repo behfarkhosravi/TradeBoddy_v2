@@ -1,2 +1,4 @@
 .idea
-/ft_userdata/user_data
+/ft_userdata/user_data/backtest_results
+/ft_userdata/user_data/data
+/ft_userdata/user_data/logs
