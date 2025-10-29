@@ -18,20 +18,19 @@ PROMETHEUS_PORT = int(os.getenv('PROMETHEUS_PORT', 8001))
 # Create a dictionary to hold gauges for each condition for each pair
 METRICS = {}
 CONDITIONS = [
-    'rsi_condition_1h',
-    'stoch_condition_1h',
-    'cloud_condition_1h',
-    'line_condition_1h',
-    'macd_condition_1h',
-    'adx_condition_1h',
-    'bb_condition_1h',
-    'rsi_condition',
+    'close',
+    'volume',
+    'rsi',
+    'rsi_ema',
     'stoch_condition',
-    'cloud_condition',
-    'line_condition',
+    'tenkan',
+    'kijun',
     'macd_condition',
-    'adx_condition',
-    'bb_condition'
+    'volume_ema',
+    'obv_condition',
+    'tema_condition',
+    'sar_condition',
+    'close_condition'
 ]
 
 # --- State ---
@@ -86,7 +85,7 @@ def refresh_jwt_token():
         logging.error(f"Failed to refresh JWT token: {e}")
         return None
 
-def fetch_pair_candles(token, pair, timeframe='15m', limit=2):
+def fetch_pair_candles(token, pair, timeframe='15m', limit=1):
     """Fetch analyzed pair candles from Freqtrade."""
     try:
         headers = {'Authorization': f'Bearer {token}'}

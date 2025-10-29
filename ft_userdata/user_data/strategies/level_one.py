@@ -70,13 +70,36 @@ class level_one(IStrategy):
             np.where(dataframe['macd'] < dataframe['macdsignal'], -1, 0)
         )
 
-        # ADX
-        dataframe['adx'] = ta.ADX(dataframe, timeperiod=14)
-        dataframe['plus_di'] = ta.PLUS_DI(dataframe, timeperiod=14)
-        dataframe['minus_di'] = ta.MINUS_DI(dataframe, timeperiod=14)
-        dataframe['adx_condition'] = np.where(
-            (dataframe['adx'] > 25) & (dataframe['plus_di'] > dataframe['minus_di']), 1,
-            np.where((dataframe['adx'] > 25) & (dataframe['plus_di'] < dataframe['minus_di']), -1, 0)
+        # Volume EMA (21 periods)
+        dataframe['volume_ema'] = ta.EMA(dataframe['volume'], timeperiod=21)
+        
+        # Close EMA (21 periods)
+        dataframe['close_ema'] = ta.EMA(dataframe['close'], timeperiod=21)
+        # Close condition relative to close_ema
+        dataframe['close_condition'] = np.where(
+            dataframe['close'] > dataframe['close_ema'], 1,
+            np.where(dataframe['close'] < dataframe['close_ema'], -1, 0)
+        )
+
+        sar = ta.SAR(dataframe['high'], dataframe['low'], acceleration=0.02, maximum=0.2)
+        dataframe['sar'] = sar
+        dataframe['sar_condition'] = np.where(
+            dataframe['close'] > sar, 1,
+            np.where(dataframe['close'] < sar, -1, 0)
+        )
+
+        tema = ta.TEMA(dataframe['close'], timeperiod=21)
+        dataframe['tema'] = tema
+        dataframe['tema_condition'] = np.where(
+            dataframe['close'] > tema, 1,
+            np.where(dataframe['close'] < tema, -1, 0)
+        )
+
+        dataframe['obv'] = ta.OBV(dataframe['close'], dataframe['volume'])
+        dataframe['obv_ema'] = ta.EMA(dataframe['obv'], timeperiod=21)
+        dataframe['obv_condition'] = np.where(
+            dataframe['obv'] > dataframe['obv_ema'], 1,
+            np.where(dataframe['obv'] < dataframe['obv_ema'], -1, 0)
         )
 
         # Drop rows with NaN from merge/shift
