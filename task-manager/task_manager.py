@@ -85,7 +85,7 @@ def refresh_jwt_token():
         logging.error(f"Failed to refresh JWT token: {e}")
         return None
 
-def fetch_pair_candles(token, pair, timeframe='15m', limit=1):
+def fetch_pair_candles(token, pair, timeframe='5m', limit=1):
     """Fetch analyzed pair candles from Freqtrade."""
     try:
         headers = {'Authorization': f'Bearer {token}'}

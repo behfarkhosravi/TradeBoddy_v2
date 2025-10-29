@@ -18,8 +18,7 @@ class level_one(IStrategy):
     stoploss = -0.10
     trailing_stop = False
 
-    timeframe = "15m"
-    informative_timeframe = '1h'
+    timeframe = "5m"
     process_only_new_candles = True
     use_exit_signal = True
     exit_profit_only = False
@@ -104,6 +103,7 @@ class level_one(IStrategy):
 
         # Drop rows with NaN from merge/shift
         dataframe.dropna(inplace=True)
+        # update local copy of dataframe with all indicators before returning
 
         return dataframe
 
